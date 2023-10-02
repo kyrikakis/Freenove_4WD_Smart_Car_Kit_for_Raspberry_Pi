@@ -27,6 +27,7 @@ from threading import Timer
 from threading import Thread
 from Command import COMMAND as cmd
 import RPi.GPIO as GPIO
+from matrix_display import Display
 
 class StreamingOutput(io.BufferedIOBase):
     def __init__(self):
@@ -48,6 +49,7 @@ class Server:
         self.adc=Adc()
         self.light=Light()
         self.infrared=Line_Tracking()
+        self.display=Display()
         self.tcp_Flag = True
         self.sonic=False
         self.Light=False
