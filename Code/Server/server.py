@@ -27,7 +27,7 @@ from threading import Timer
 from threading import Thread
 from Command import COMMAND as cmd
 import RPi.GPIO as GPIO
-from matrix_display import Display
+from matrix_display import CustomLEDMatrixController
 
 class StreamingOutput(io.BufferedIOBase):
     def __init__(self):
@@ -49,7 +49,7 @@ class Server:
         self.adc=Adc()
         self.light=Light()
         self.infrared=Line_Tracking()
-        self.display=Display()
+        self.display=CustomLEDMatrixController()
         self.tcp_Flag = True
         self.sonic=False
         self.Light=False
@@ -59,6 +59,25 @@ class Server:
         self.endChar='\n'
         self.intervalChar='#'
         self.rotation_flag = False
+        # Create an instance of the CustomLEDMatrixController class with the specified I2C address (0x71)
+        led_matrix = CustomLEDMatrixController(i2c_address=0x71)
+
+        # Define your LED data as a 16x8 list of True/False values for eyeSmile
+        eyeSmile = [
+            [False, False, False, False, False, False, False, False],
+            [False, False, False, False, False, False, False, False],
+            [False, False, True, False, False, True, False, False],
+            [False, False, False, True, True, False, False, False],
+            [False, False, False, False, False, False, False, False],
+            [False, False, False, False, False, False, False, False],
+            [False, False, False, False, False, False, False, False],
+            [False, False, False, False, False, False, False, False]
+        ]
+
+        # Fill the display with the eyeSmile data for both left and right
+        led_matrix.fill_display(eyeSmile)
+        # Update the physical display
+        led_matrix.show_display()
     def get_interface_ip(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         return socket.inet_ntoa(fcntl.ioctl(s.fileno(),
