@@ -59,8 +59,6 @@ class Server:
         self.endChar='\n'
         self.intervalChar='#'
         self.rotation_flag = False
-        # Create an instance of the CustomLEDMatrixController class with the specified I2C address (0x71)
-        led_matrix = CustomLEDMatrixController(i2c_address=0x71)
 
         # Define your LED data as a 16x8 list of True/False values for eyeSmile
         eyeSmile = [
@@ -75,9 +73,9 @@ class Server:
         ]
 
         # Fill the display with the eyeSmile data for both left and right
-        led_matrix.fill_display(eyeSmile)
+        self.display.fill_display(eyeSmile)
         # Update the physical display
-        led_matrix.show_display()
+        self.display.show_display()
     def get_interface_ip(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         return socket.inet_ntoa(fcntl.ioctl(s.fileno(),
