@@ -59,7 +59,23 @@ class Server:
         self.endChar='\n'
         self.intervalChar='#'
         self.rotation_flag = False
-        
+
+        # Define your LED data as a 16x8 list of True/False values for eyeSmile
+        eyeSmile = [
+            [False, False, False, False, False, False, False, False],
+            [False, False, False, False, False, False, False, False],
+            [False, False, True, False, False, True, False, False],
+            [False, False, False, True, True, False, False, False],
+            [False, False, False, False, False, False, False, False],
+            [False, False, False, False, False, False, False, False],
+            [False, False, False, False, False, False, False, False],
+            [False, False, False, False, False, False, False, False]
+        ]
+
+        # Fill the display with the eyeSmile data for both left and right
+        self.display.fill_display(eyeSmile)
+        # Update the physical display
+        self.display.show_display()
     def get_interface_ip(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         return socket.inet_ntoa(fcntl.ioctl(s.fileno(),

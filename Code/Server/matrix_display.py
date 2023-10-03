@@ -15,7 +15,7 @@ class CustomLEDMatrixController:
         for row in range(8):
             for col in range(16):
                 # Invert rows and columns here
-                self.matrix[col, row] = data[row][col]
+                self.matrix[col, row] = data[row][col % 8]
 
     def clear_display(self):
         """
