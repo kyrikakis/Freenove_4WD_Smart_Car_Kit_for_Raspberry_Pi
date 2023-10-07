@@ -423,6 +423,7 @@ class Server:
             else:
                 self.buzzer.run('0')               
     def Display(self):
+        self.display.animation=MATRIX_MODE.HAPPY
         self.display.eyes_smile()
         while True:
             if self.matrix_mode==MATRIX_MODE.HAPPY:
