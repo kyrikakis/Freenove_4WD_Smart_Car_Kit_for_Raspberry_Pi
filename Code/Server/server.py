@@ -310,7 +310,7 @@ class Server:
                             limited_data2=data2
                             if(data2<85):
                                 limited_data2=85
-                            self.servo.setServoPwm('1',inverted_data1)
+                            self.servo.setServoPwm('0',inverted_data1)
                             self.servo.setServoPwm('1',limited_data2)
                         except:
                             pass
