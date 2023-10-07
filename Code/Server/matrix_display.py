@@ -39,12 +39,12 @@ class CustomLEDMatrixController:
             self.fill_display(eyeSmile)
             # Update the physical display
             self.show_display()
-            time.sleep(4000)
+            time.sleep(4)
             # Fill the display with the eyeSmile data for both left and right
             self.fill_display(eyeShut)
             # Update the physical display
             self.show_display()
-            time.sleep(600)
+            time.sleep(0.6)
 
 
     def fill_display(self, data):
