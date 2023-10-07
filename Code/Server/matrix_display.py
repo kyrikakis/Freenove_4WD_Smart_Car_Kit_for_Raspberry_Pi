@@ -44,7 +44,7 @@ class CustomLEDMatrixController:
             self.fill_display(eyeShut)
             # Update the physical display
             self.show_display()
-            time.sleep(0.6)
+            time.sleep(0.2)
 
 
     def fill_display(self, data):
