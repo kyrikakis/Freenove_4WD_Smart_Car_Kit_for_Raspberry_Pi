@@ -44,6 +44,7 @@ class mywindow(QMainWindow,Ui_server_ui):
             self.SendVideo.start()
             self.ReadData.start()
             self.power.start()
+            self.display.start()
             if self.user_ui:
                 self.label.setText("Server On")
                 self.Button_Server.setText("Off")
