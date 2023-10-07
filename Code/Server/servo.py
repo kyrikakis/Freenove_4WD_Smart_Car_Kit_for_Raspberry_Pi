@@ -5,7 +5,7 @@ class Servo:
         self.PwmServo = PCA9685(0x40, debug=True)
         self.PwmServo.setPWMFreq(50)
         self.PwmServo.setServoPulse(8,1500)
-        self.PwmServo.setServoPulse(9,1500)
+        self.PwmServo.setServoPulse(9,1600)
     def setServoPwm(self,channel,angle,error=10):
         angle=int(angle)
         if channel=='0':

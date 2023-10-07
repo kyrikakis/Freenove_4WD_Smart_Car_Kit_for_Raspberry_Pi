@@ -36,14 +36,14 @@ class CustomLEDMatrixController:
         
         while True:
             # Fill the display with the eyeSmile data for both left and right
-            self.display.fill_display(eyeSmile)
+            self.fill_display(eyeSmile)
             # Update the physical display
-            self.display.show_display()
+            self.show_display()
             time.sleep(4000)
             # Fill the display with the eyeSmile data for both left and right
-            self.display.fill_display(eyeShut)
+            self.fill_display(eyeShut)
             # Update the physical display
-            self.display.show_display()
+            self.show_display()
             time.sleep(600)
 
 
