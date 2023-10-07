@@ -40,6 +40,7 @@ class mywindow(QMainWindow,Ui_server_ui):
             self.ReadData=Thread(target=self.TCP_Server.readdata)
             self.SendVideo=Thread(target=self.TCP_Server.sendvideo)
             self.power=Thread(target=self.TCP_Server.Power)
+            self.display=Thread(target=self.TCP_Server.Display)
             self.SendVideo.start()
             self.ReadData.start()
             self.power.start()
