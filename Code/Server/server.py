@@ -154,7 +154,7 @@ class Server:
             stop_thread(self.ultrasonicRun)
             self.PWM.setMotorModel(0,0,0,0)
             self.servo.setServoPwm('0',90)
-            self.servo.setServoPwm('1',95)
+            self.servo.setServoPwm('1',105)
         except:
             pass
         self.sonic=False
