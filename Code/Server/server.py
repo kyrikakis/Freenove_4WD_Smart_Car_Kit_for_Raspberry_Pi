@@ -300,7 +300,7 @@ class Server:
                                 Rotate_Mode.start()
                         except:
                             pass
-                    elif cmd.CMD_SERVO in data:
+                    elif cmd.CMD_CAMERA in data:
                         try:
                             data1 = data[1]
                             data2 = int(data[2])
