@@ -86,11 +86,11 @@ class Server:
         HOST=str(self.get_interface_ip())
         self.server_socket1 = socket.socket()
         self.server_socket1.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEPORT,1)
-        self.server_socket1.bind((HOST, 5000))
+        self.server_socket1.bind((HOST, 4000))
         self.server_socket1.listen(1)
         self.server_socket = socket.socket()
         self.server_socket.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEPORT,1)
-        self.server_socket.bind((HOST, 8000))
+        self.server_socket.bind((HOST, 7000))
         self.server_socket.listen(1)
         print('Server address: '+HOST)
 
