@@ -1,6 +1,7 @@
 import board
 import busio
 from adafruit_ht16k33 import matrix
+from MatrixMode import MATRIX_MODE
 import time
 
 
@@ -24,8 +25,29 @@ eyeShut = [
     [False, False, False, False, False, False, False, False],
     [False, False, False, False, False, False, False, False]
 ]
+eyeOpen = [
+    [False, False, False, False, False, False, False, False],
+    [False, False, True, True, True, True, False, False],
+    [False, True, False, False, False, False, True, False],
+    [False, True, False, False, False, False, True, False],
+    [False, True, False, False, False, False, True, False],
+    [False, False, True, True, True, True, True, False],
+    [False, False, False, False, False, False, False, False],
+    [False, False, False, False, False, False, False, False]
+]
+eyeOpenFill = [
+    [False, False, False, False, False, False, False, False],
+    [False, False, True, True, True, True, False, False],
+    [False, True, True, True, True, True, True, False],
+    [False, True, True, True, True, True, True, False],
+    [False, True, True, True, True, True, True, False],
+    [False, False, True, True, True, True, False, False],
+    [False, False, False, False, False, False, False, False],
+    [False, False, False, False, False, False, False, False]
+]
 
 class CustomLEDMatrixController:
+    animation = MATRIX_MODE.NONE
     
     def __init__(self, i2c_address=0x71):
         # Initialize I2C bus and HT16K33 LED matrix with the specified address
@@ -33,18 +55,29 @@ class CustomLEDMatrixController:
         self.matrix = matrix.Matrix16x8(i2c, address=i2c_address)
     
     def eyes_smile(self):
-        
-        while True:
+        self.clear_display()
+        while self.animation==MATRIX_MODE.HAPPY:
             # Fill the display with the eyeSmile data for both left and right
             self.fill_display(eyeSmile)
             # Update the physical display
             self.show_display()
-            time.sleep(4)
+            time.sleep(3)
             # Fill the display with the eyeSmile data for both left and right
             self.fill_display(eyeShut)
             # Update the physical display
             self.show_display()
 
+    def eyes_blink(self):
+        self.clear_display()
+        while self.animation==MATRIX_MODE.BLINK:
+            # Fill the display with the eyeSmile data for both left and right
+            self.fill_display(eyeOpen)
+            # Update the physical display
+            self.show_display()
+            # Fill the display with the eyeSmile data for both left and right
+            self.fill_display(eyeOpenFill)
+            # Update the physical display
+            self.show_display()
 
     def fill_display(self, data):
         """

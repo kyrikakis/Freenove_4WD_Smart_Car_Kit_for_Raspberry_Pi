@@ -26,6 +26,7 @@ from Line_Tracking import *
 from threading import Timer
 from threading import Thread
 from Command import COMMAND as cmd
+from MatrixMode import MATRIX_MODE
 import RPi.GPIO as GPIO
 from matrix_display import CustomLEDMatrixController
 
@@ -59,6 +60,7 @@ class Server:
         self.endChar='\n'
         self.intervalChar='#'
         self.rotation_flag = False
+        self.matrix_mode=MATRIX_MODE.NONE
     def get_interface_ip(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         return socket.inet_ntoa(fcntl.ioctl(s.fileno(),
@@ -359,6 +361,11 @@ class Server:
                             self.send(cmd.CMD_POWER+'#'+str(round(ADC_Power, 2))+'\n')
                         except:
                             pass
+                    elif cmd.CMD_MATRIX_MOD in data:
+                        self.matrix_mode=data[1]
+                        self.display.animation=self.matrix_mode
+
+
         except Exception as e:
             print(e)
         self.StopTcpServer()
@@ -416,8 +423,12 @@ class Server:
             else:
                 self.buzzer.run('0')               
     def Display(self):
-        self.display.clear_display()
         self.display.eyes_smile()
+        while True:
+            if self.matrix_mode==MATRIX_MODE.HAPPY:
+                self.display.eyes_smile()
+            elif self.matrix_mode==MATRIX_MODE.BLINK:
+                self.display.eyes_blink()
 
 
 if __name__=='__main__':
