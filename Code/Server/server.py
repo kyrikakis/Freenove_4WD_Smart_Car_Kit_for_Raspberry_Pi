@@ -154,7 +154,7 @@ class Server:
             stop_thread(self.ultrasonicRun)
             self.PWM.setMotorModel(0,0,0,0)
             self.servo.setServoPwm('0',90)
-            self.servo.setServoPwm('1',90)
+            self.servo.setServoPwm('1',85)
         except:
             pass
         self.sonic=False
@@ -302,12 +302,16 @@ class Server:
                             pass
                     elif cmd.CMD_CAMERA in data:
                         try:
-                            data1 = data[1]
+                            data1 = int(data[1])
                             data2 = int(data[2])
                             if data1 == None or data2 == None:
                                 continue
-                            self.servo.setServoPwm('1',data1)
-                            self.servo.setServoPwm('0',data2)
+                            inverted_data1=180-data1
+                            limited_data2=data2
+                            if(data2<85):
+                                limited_data2=85
+                            self.servo.setServoPwm('1',inverted_data1)
+                            self.servo.setServoPwm('1',limited_data2)
                         except:
                             pass
 
