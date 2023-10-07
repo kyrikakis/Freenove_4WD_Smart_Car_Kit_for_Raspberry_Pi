@@ -416,6 +416,7 @@ class Server:
             else:
                 self.buzzer.run('0')               
     def Display(self):
+        self.display.clear_display()
         self.display.eyes_smile()
 
 

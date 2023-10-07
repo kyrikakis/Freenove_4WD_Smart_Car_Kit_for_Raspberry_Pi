@@ -7,6 +7,22 @@ class CustomLEDMatrixController:
         # Initialize I2C bus and HT16K33 LED matrix with the specified address
         i2c = busio.I2C(board.SCL, board.SDA)
         self.matrix = matrix.Matrix16x8(i2c, address=i2c_address)
+    
+    def eyes_smile(self):
+        eyeSmile = [
+            [False, False, False, False, False, False, False, False],
+            [False, False, False, False, False, False, False, False],
+            [False, False, True, False, False, True, False, False],
+            [False, False, False, True, True, False, False, False],
+            [False, False, False, False, False, False, False, False],
+            [False, False, False, False, False, False, False, False],
+            [False, False, False, False, False, False, False, False],
+            [False, False, False, False, False, False, False, False]
+        ]
+        # Fill the display with the eyeSmile data for both left and right
+        self.display.fill_display(eyeSmile)
+        # Update the physical display
+        self.display.show_display()
 
     def fill_display(self, data):
         """
