@@ -306,8 +306,8 @@ class Server:
                             data2 = int(data[2])
                             if data1 == None or data2 == None:
                                 continue
-                            self.servo.setServoPwm('0',data1)
-                            self.servo.setServoPwm('1',data2)
+                            self.servo.setServoPwm('1',data1)
+                            self.servo.setServoPwm('0',data2)
                         except:
                             pass
 
