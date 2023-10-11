@@ -32,7 +32,7 @@ else:
         lastReadTime = time.perf_counter() - poll_interval #Read the first time
         lastServoTime = time.perf_counter() + servo_interval #Postpone servo the first time
         while True:
-            if((time.perf_counter - lastReadTime) > poll_interval):
+            if((time.perf_counter() - lastReadTime) > poll_interval):
                 if imu.IMURead():
                     lastRead = time.time()
                     data = imu.getIMUData()
@@ -42,7 +42,7 @@ else:
                     yaw = math.degrees(fusionPose[2])
                     print(f"Roll: {roll:.2f} degrees, Pitch: {pitch:.2f} degrees, Yaw: {yaw:.2f} degrees")
 
-                    if((time.perf_counter - lastServoTime) > servo_interval):
+                    if((time.perf_counter() - lastServoTime) > servo_interval):
                         # Perform servo control here
                         # For example, to set a servo to a specific angle:
                         if(roll < 85):
