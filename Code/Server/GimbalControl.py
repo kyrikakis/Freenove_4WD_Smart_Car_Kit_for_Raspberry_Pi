@@ -17,28 +17,37 @@ else:
     imu.setAccelEnable(True)
     imu.setCompassEnable(False)
 
-    poll_interval = imu.IMUGetPollInterval()
-    print("Poll Interval: %d ms" % poll_interval)
 
     # Initialize the Servo class for controlling servos
     servo = Servo()
+    servo_interval = 0.1 #Servo interval in seconds
+    time.sleep(2)
+
+    poll_interval = imu.IMUGetPollInterval()
+    print("Poll Interval: %d ms" % poll_interval)
+    poll_interval = poll_interval/1000
+    time.sleep(1)
 
     try:
+        lastReadTime = time.perf_counter() - poll_interval #Read the first time
+        lastServoTime = time.perf_counter() + servo_interval #Postpone servo the first time
         while True:
-            if imu.IMURead():
-                data = imu.getIMUData()
-                fusionPose = data["fusionPose"]
-                roll = math.degrees(fusionPose[0]) -90
-                pitch = math.degrees(fusionPose[1])
-                yaw = math.degrees(fusionPose[2])
-                print(f"Roll: {roll:.2f} degrees, Pitch: {pitch:.2f} degrees, Yaw: {yaw:.2f} degrees")
+            if((time.perf_counter - lastReadTime) > poll_interval):
+                if imu.IMURead():
+                    lastRead = time.time()
+                    data = imu.getIMUData()
+                    fusionPose = data["fusionPose"]
+                    roll = math.degrees(fusionPose[0]) -90
+                    pitch = math.degrees(fusionPose[1])
+                    yaw = math.degrees(fusionPose[2])
+                    print(f"Roll: {roll:.2f} degrees, Pitch: {pitch:.2f} degrees, Yaw: {yaw:.2f} degrees")
 
-                # Perform servo control here
-                # For example, to set a servo to a specific angle:
-                servo.setServoPwm('0', roll)
-                servo.setServoPwm('1', yaw)
-
-                time.sleep(poll_interval/1000.0)
+                    if((time.perf_counter - lastServoTime) > servo_interval):
+                        # Perform servo control here
+                        # For example, to set a servo to a specific angle:
+                        servo.setServoPwm('0', roll)
+                        servo.setServoPwm('1', yaw)
+                        lastServoTime = time.perf_counter()
 
     except KeyboardInterrupt:
         pass
