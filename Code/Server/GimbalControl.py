@@ -54,7 +54,7 @@ else:
                             roll = 85
                         print('servo moved')
                         servo.setServoPwm('0', yaw)
-                        servo.setServoPwm('1', roll)
+                        servo.setServoPwm('1', pitch)
                         lastServoTime = time.perf_counter()
 
     except KeyboardInterrupt:
