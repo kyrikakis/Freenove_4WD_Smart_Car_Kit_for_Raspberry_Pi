@@ -45,10 +45,10 @@ else:
                     if((time.perf_counter() - lastServoTime) > servo_interval):
                         # Perform servo control here
                         # For example, to set a servo to a specific angle:
-                        if(roll < 85):
-                            roll = 85
+                        if(pitch < 85):
+                            pitch = 85
                         servo.setServoPwm('0', yaw)
-                        servo.setServoPwm('1', roll)
+                        servo.setServoPwm('1', pitch)
                         lastServoTime = time.perf_counter()
 
     except KeyboardInterrupt:
