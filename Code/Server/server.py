@@ -138,8 +138,8 @@ class Server:
         try:
             stop_thread(self.ultrasonicRun)
             self.PWM.setMotorModel(0,0,0,0)
-            self.servo.setServoPwm('0',90)
-            self.servo.setServoPwm('1',83)
+            self.servo.setServoPwm('1',90)
+            self.servo.setServoPwm('2',83)
         except:
             pass
         self.sonic=False
@@ -297,8 +297,8 @@ class Server:
                                 limited_data2=83
                             elif(data2>150):
                                 limited_data2=150
-                            self.servo.setServoPwm('0',inverted_data1)
-                            self.servo.setServoPwm('1',limited_data2)
+                            self.servo.setServoPwm('1',inverted_data1)
+                            self.servo.setServoPwm('2',limited_data2)
                         except:
                             pass
 

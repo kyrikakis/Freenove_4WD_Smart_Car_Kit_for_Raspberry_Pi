@@ -4,14 +4,14 @@ class Servo:
     def __init__(self):
         self.PwmServo = PCA9685(0x40, debug=True)
         self.PwmServo.setPWMFreq(50)
-        self.PwmServo.setServoPulse(8,1470)
-        self.PwmServo.setServoPulse(9,1600)
+        self.PwmServo.setServoPulse(9,1470)
+        self.PwmServo.setServoPulse(10,1600)
     def setServoPwm(self,channel,angle,error=10):
         angle=int(angle)
         if channel=='0':
             self.PwmServo.setServoPulse(8,2500-int((angle+error)/0.09))
         elif channel=='1':
-            self.PwmServo.setServoPulse(9,500+int((angle+error)/0.09))
+            self.PwmServo.setServoPulse(9,2500-int((angle+error)/0.09))
         elif channel=='2':
             self.PwmServo.setServoPulse(10,500+int((angle+error)/0.09))
         elif channel=='3':
@@ -34,8 +34,8 @@ if __name__ == '__main__':
     pwm=Servo()
     while True:
         try :
-            pwm.setServoPwm('0',90)
-            pwm.setServoPwm('1',95)
+            pwm.setServoPwm('1',90)
+            pwm.setServoPwm('2',95)
         except KeyboardInterrupt:
             print ("\nEnd of program")
             break
