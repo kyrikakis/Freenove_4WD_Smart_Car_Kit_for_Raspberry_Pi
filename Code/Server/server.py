@@ -373,8 +373,12 @@ class Server:
                         except:
                             pass
                     elif cmd.CMD_MATRIX_MOD in data:
-                        self.matrix_mode=data[1]
-                        self.display.animation=self.matrix_mode
+                        if data[1] == '1':
+                            self.gimbalRun=threading.Thread(target=self.gimbal.start)
+                            self.gimbalRun.start()
+                        else:
+                            self.gimbal.stop()
+
 
 
         except Exception as e:

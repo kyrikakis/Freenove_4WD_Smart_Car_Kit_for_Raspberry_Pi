@@ -30,7 +30,7 @@ class GimbalControl:
         self.poll_interval = self.imu.IMUGetPollInterval()/1000
 
         self.is_running = True
-        print(f'gimbal start {self.is_running}')
+        print(f'gimbal started')
         self.gimbalThread = Thread(target=self.get_data)
         self.gimbalThread.start()
 
@@ -46,7 +46,7 @@ class GimbalControl:
                 # For example, to set a servo to a specific angle:
                 yaw = self.normalize_yaw(self.yaw)
                 roll = self.normalize_combined(self.pitch, self.yaw, self.roll)
-                print(f"Roll: {self.roll:.2f} degrees, Pitch: {self.pitch:.2f} degrees, Yaw: {self.yaw:.2f} degrees, SYaw: {yaw:.2f} degrees, SRoll: {roll:.2f} degrees")
+                # print(f"Roll: {self.roll:.2f} degrees, Pitch: {self.pitch:.2f} degrees, Yaw: {self.yaw:.2f} degrees, SYaw: {yaw:.2f} degrees, SRoll: {roll:.2f} degrees")
                 self.servo.setServoPwm('1', yaw)
                 self.servo.setServoPwm('2', roll)
                 lastServoTime = time.perf_counter()
