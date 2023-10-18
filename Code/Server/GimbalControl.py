@@ -9,6 +9,13 @@ class GimbalControl:
     def __init__(self):
         self.is_running = True
 
+        self.roll = 0
+        self.pitch = 0
+        self.yaw = 0
+
+        self.servo = Servo()
+
+    def start(self):
         self.s = RTIMU.Settings("RTIMULib")
         self.imu = RTIMU.RTIMU(self.s)
 
@@ -22,13 +29,6 @@ class GimbalControl:
 
         self.poll_interval = self.imu.IMUGetPollInterval()/1000
 
-        self.roll = 0
-        self.pitch = 0
-        self.yaw = 0
-
-        self.servo = Servo()
-
-    def start(self):
         self.is_running = True
         print(f'gimbal start {self.is_running}')
         self.gimbalThread = Thread(target=self.get_data)
@@ -145,6 +145,8 @@ class GimbalControl:
 
     def stop(self):
         self.is_running = False
+        self.servo.setServoPwm('1', 90)
+        self.servo.setServoPwm('2', 90)
         pass
 
 if __name__ == "__main__":
