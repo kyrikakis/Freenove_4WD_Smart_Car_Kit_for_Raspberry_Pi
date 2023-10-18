@@ -7,7 +7,7 @@ from threading import Thread
 
 class GimbalControl:
     def __init__(self):
-        # self.servo = Servo()  # Initialize the Servo class
+        self.is_running = True
 
         self.s = RTIMU.Settings("RTIMULib")
         self.imu = RTIMU.RTIMU(self.s)
@@ -26,25 +26,47 @@ class GimbalControl:
         self.pitch = 0
         self.yaw = 0
 
+        self.servo = Servo()
+
     def start(self):
-        try:
-            lastReadTime = time.perf_counter() #Read the first time
-            while True:
-                timeElapsed = time.perf_counter() - lastReadTime
-                if(timeElapsed > self.poll_interval):
-                    if self.imu.IMURead():
-                        # print(f"timeElapsed: {timeElapsed}")
-                        # print(f"lastReadTime: {lastReadTime}")
-                        # print(f"lastServoTime: {lastServoTime}")
-                        data = self.imu.getIMUData()
-                        fusionPose = data["fusionPose"]
-                        self.roll = math.degrees(fusionPose[0])
-                        self.pitch = math.degrees(fusionPose[1])
-                        self.yaw = math.degrees(fusionPose[2])
-                        # print(f"Roll: {self.roll:.2f} degrees, Pitch: {self.pitch:.2f} degrees, Yaw: {self.yaw:.2f} degrees")
-                        lastReadTime = time.perf_counter()
-        except KeyboardInterrupt:
-            pass
+        self.is_running = True
+        print(f'gimbal start {self.is_running}')
+        self.gimbalThread = Thread(target=self.get_data)
+        self.gimbalThread.start()
+
+        self.servo.setServoPwm('1', 90)
+        self.servo.setServoPwm('2', 90)
+
+        servo_interval = self.poll_interval #Servo interval in seconds
+        lastServoTime = time.perf_counter() #Postpone servo the first time
+        while self.is_running:
+            timeElapsed = time.perf_counter() - lastServoTime
+            if(timeElapsed > servo_interval):
+                # Perform servo control here
+                # For example, to set a servo to a specific angle:
+                yaw = self.normalize_yaw(self.yaw)
+                roll = self.normalize_combined(self.pitch, self.yaw, self.roll)
+                print(f"Roll: {self.roll:.2f} degrees, Pitch: {self.pitch:.2f} degrees, Yaw: {self.yaw:.2f} degrees, SYaw: {yaw:.2f} degrees, SRoll: {roll:.2f} degrees")
+                self.servo.setServoPwm('1', yaw)
+                self.servo.setServoPwm('2', roll)
+                lastServoTime = time.perf_counter()
+
+    def get_data(self):
+        lastReadTime = time.perf_counter() #Read the first time
+        while self.is_running:
+            timeElapsed = time.perf_counter() - lastReadTime
+            if(timeElapsed > self.poll_interval):
+                if self.imu.IMURead():
+                    # print(f"timeElapsed: {timeElapsed}")
+                    # print(f"lastReadTime: {lastReadTime}")
+                    # print(f"lastServoTime: {lastServoTime}")
+                    data = self.imu.getIMUData()
+                    fusionPose = data["fusionPose"]
+                    self.roll = math.degrees(fusionPose[0])
+                    self.pitch = math.degrees(fusionPose[1])
+                    self.yaw = math.degrees(fusionPose[2])
+                    # print(f"Roll: {self.roll:.2f} degrees, Pitch: {self.pitch:.2f} degrees, Yaw: {self.yaw:.2f} degrees")
+                    lastReadTime = time.perf_counter()
 
     def normalize_yaw(self, yaw):
         min_original = -90
@@ -53,16 +75,16 @@ class GimbalControl:
         max_normalized = 180
 
         if yaw < min_original:
-            normalized_value = min_original
+            normalized_value = min_normalized
         elif yaw > max_original:
-            normalized_value = max_original
+            normalized_value = max_normalized
         else:
             # Apply the linear transformation formula
             normalized_value = ((yaw - min_original) / (max_original - min_original)) * (max_normalized - min_normalized) + min_normalized
         inverted_value = max_normalized - normalized_value
         return inverted_value
     
-    def normalize_roll_or_pitch(self, roll):
+    def normalize_roll(self, roll):
         min_original = -60
         max_original = 5
         min_normalized = 150
@@ -75,6 +97,24 @@ class GimbalControl:
         else:
             # Apply the linear transformation formula
             normalized_value = ((roll - min_original) / (max_original - min_original)) * (max_normalized - min_normalized) + min_normalized
+
+        return normalized_value
+    
+    def normalize_pitch(self, pitch, yaw):
+        min_original = -60
+        max_original = 5
+        if yaw > 0:
+            pitch = -pitch
+        min_normalized = 150
+        max_normalized = 85
+
+        if pitch < min_original:
+            normalized_value = min_normalized
+        elif pitch > max_original:
+            normalized_value = max_normalized
+        else:
+            # Apply the linear transformation formula
+            normalized_value = ((pitch - min_original) / (max_original - min_original)) * (max_normalized - min_normalized) + min_normalized
 
         return normalized_value
     
@@ -91,45 +131,26 @@ class GimbalControl:
         roll_weight = 1 - pitch_weight
         # print(f"roll_weight: {roll_weight}")
         # Linearly combine the effects of roll and pitch
-        normalized_roll = self.normalize_roll_or_pitch(roll)
-        normalized_pitch = self.normalize_roll_or_pitch(pitch)
+        normalized_roll = self.normalize_roll(roll)
+        normalized_pitch = self.normalize_pitch(pitch, yaw)
         # print(f"normalized_roll: {normalized_roll}")
         # print(f"normalized_pitch: {normalized_pitch}")
         normalized_roll = roll_weight * normalized_roll
         normalized_pitch = pitch_weight * normalized_pitch
         # print(f"normalized_roll with weight: {normalized_roll}")
         # print(f"normalized_pitch with weight: {normalized_pitch}")
-        normalized_value = (normalized_roll + normalized_pitch)
+        normalized_value = normalized_roll + normalized_pitch
 
         return normalized_value
 
     def stop(self):
-        # Clean up and stop the servos
+        self.is_running = False
         pass
 
 if __name__ == "__main__":
     gimbal = GimbalControl()
-    gimbalThread = Thread(target=gimbal.start)
-    gimbalThread.start()
-
-    servo = Servo()
-    time.sleep(2)
-    servo.setServoPwm('1', 90)
-    servo.setServoPwm('2', 90)
-
-    servo_interval = gimbal.poll_interval #Servo interval in seconds
     try:
-        lastServoTime = time.perf_counter() #Postpone servo the first time
-        while True:
-            timeElapsed = time.perf_counter() - lastServoTime
-            if(timeElapsed > servo_interval):
-                # Perform servo control here
-                # For example, to set a servo to a specific angle:
-                yaw = gimbal.normalize_yaw(gimbal.yaw)
-                roll = gimbal.normalize_combined(gimbal.pitch, gimbal.yaw, gimbal.roll)
-                print(f"Roll: {gimbal.roll:.2f} degrees, Pitch: {gimbal.pitch:.2f} degrees, Yaw: {gimbal.yaw:.2f} degrees, SYaw: {yaw:.2f} degrees, SRoll: {roll:.2f} degrees")
-                servo.setServoPwm('1', yaw)
-                servo.setServoPwm('2', roll)
-                lastServoTime = time.perf_counter()
+        gimbal.start()
     except KeyboardInterrupt:
+        gimbal.stop()
         pass

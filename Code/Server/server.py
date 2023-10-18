@@ -29,6 +29,7 @@ from Command import COMMAND as cmd
 from MatrixMode import MATRIX_MODE
 import RPi.GPIO as GPIO
 from matrix_display import CustomLEDMatrixController
+from GimbalControl import GimbalControl
 
 class StreamingOutput(io.BufferedIOBase):
     def __init__(self):
@@ -51,6 +52,7 @@ class Server:
         self.light=Light()
         self.infrared=Line_Tracking()
         self.display=CustomLEDMatrixController()
+        self.gimbal=GimbalControl()
         self.tcp_Flag = True
         self.sonic=False
         self.Light=False
@@ -142,6 +144,13 @@ class Server:
             self.servo.setServoPwm('2',83)
         except:
             pass
+        try:
+            self.gimbal.stop()
+            stop_thread(self.gimbalRun)
+            self.servo.setServoPwm('1',90)
+            self.servo.setServoPwm('2',90)
+        except:
+            pass
         self.sonic=False
         self.Light=False
         self.Line=False         
@@ -206,11 +215,13 @@ class Server:
                         elif data[1]=='four' or data[1]=="2":
                             self.stopMode()
                             self.Mode='four'
-                            self.infraredRun=threading.Thread(target=self.infrared.run)
-                            self.infraredRun.start()
-                            self.Line=True
-                            self.lineTimer = threading.Timer(0.4,self.sendLine)
-                            self.lineTimer.start()
+                            self.gimbalRun=threading.Thread(target=self.gimbal.start)
+                            self.gimbalRun.start()
+                            # self.infraredRun=threading.Thread(target=self.infrared.run)
+                            # self.infraredRun.start()
+                            # self.Line=True
+                            # self.lineTimer = threading.Timer(0.4,self.sendLine)
+                            # self.lineTimer.start()
 
                     elif (cmd.CMD_MOTOR in data) and self.Mode=='one':
                         try:

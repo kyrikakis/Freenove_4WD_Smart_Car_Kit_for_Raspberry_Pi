@@ -9,7 +9,7 @@ class COMMAND:
     CMD_SONIC = "CMD_SONIC"
     CMD_LIGHT = "CMD_LIGHT"
     CMD_POWER = "CMD_POWER" 
-    CMD_MODE = "CMD_MODE"
+    CMD_MODE = "CMD_CAR_MODE"
     CMD_MATRIX_MOD = "CMD_MATRIX_MOD"
     def __init__(self):
         pass
