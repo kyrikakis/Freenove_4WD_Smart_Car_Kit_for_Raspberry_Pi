@@ -108,7 +108,7 @@ class Server:
         self.server_socket.close()
         print ("socket video connected ... ")
         camera = Picamera2()
-        camera.configure(camera.create_video_configuration(main={"size": (758, 350)}))
+        camera.configure(camera.create_video_configuration(main={"size": (600, 277)}))
         output = StreamingOutput()
         encoder = JpegEncoder(q=90)
         camera.start_recording(encoder, FileOutput(output),quality=Quality.VERY_HIGH)
