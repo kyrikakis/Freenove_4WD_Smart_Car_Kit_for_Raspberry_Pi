@@ -7,11 +7,10 @@ from threading import Thread
 
 class GimbalControl:
     def __init__(self):
-        self.is_running = True
+        self.is_running = False
 
-        self.roll = 0
-        self.pitch = 0
-        self.yaw = 0
+        self.initial_pitch = 0
+        self.initial_yaw = 0
 
         self.servo = Servo()
 
@@ -46,6 +45,7 @@ class GimbalControl:
                 # For example, to set a servo to a specific angle:
                 yaw = self.normalize_yaw(self.yaw)
                 roll = self.normalize_combined(self.pitch, self.yaw, self.roll)
+                # yaw = yaw - self.initial_yaw
                 # print(f"Roll: {self.roll:.2f} degrees, Pitch: {self.pitch:.2f} degrees, Yaw: {self.yaw:.2f} degrees, SYaw: {yaw:.2f} degrees, SRoll: {roll:.2f} degrees")
                 self.servo.setServoPwm('1', yaw)
                 self.servo.setServoPwm('2', roll)
@@ -65,6 +65,9 @@ class GimbalControl:
                     self.roll = math.degrees(fusionPose[0])
                     self.pitch = math.degrees(fusionPose[1])
                     self.yaw = math.degrees(fusionPose[2])
+                    # self.yaw=self.yaw+self.initial_yaw
+                    # self.pitch=self.pitch+self.initial_pitch
+                    # self.roll=self.roll+self.initial_pitch
                     # print(f"Roll: {self.roll:.2f} degrees, Pitch: {self.pitch:.2f} degrees, Yaw: {self.yaw:.2f} degrees")
                     lastReadTime = time.perf_counter()
 
@@ -90,6 +93,7 @@ class GimbalControl:
         min_normalized = 150
         max_normalized = 85
 
+        # roll = roll - self.initial_pitch
         if roll < min_original:
             normalized_value = min_normalized
         elif roll > max_original:
@@ -103,8 +107,10 @@ class GimbalControl:
     def normalize_pitch(self, pitch, yaw):
         min_original = -60
         max_original = 5
+        # pitch = pitch - self.initial_pitch
         if yaw > 0:
             pitch = -pitch
+            # pitch = pitch + self.initial_pitch
         min_normalized = 150
         max_normalized = 85
 

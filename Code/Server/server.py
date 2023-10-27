@@ -63,6 +63,8 @@ class Server:
         self.intervalChar='#'
         self.rotation_flag = False
         self.matrix_mode=MATRIX_MODE.NONE
+        self.head_azimuth=90
+        self.head_elevation=90
     def get_interface_ip(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         return socket.inet_ntoa(fcntl.ioctl(s.fileno(),
@@ -106,7 +108,7 @@ class Server:
         self.server_socket.close()
         print ("socket video connected ... ")
         camera = Picamera2()
-        camera.configure(camera.create_video_configuration(main={"size": (600, 277)}))
+        camera.configure(camera.create_video_configuration(main={"size": (758, 350)}))
         output = StreamingOutput()
         encoder = JpegEncoder(q=90)
         camera.start_recording(encoder, FileOutput(output),quality=Quality.VERY_HIGH)
@@ -302,14 +304,14 @@ class Server:
                             data2 = int(data[2])
                             if data1 == None or data2 == None:
                                 continue
-                            inverted_data1=180-data1
-                            limited_data2=data2
+                            self.head_azimuth=180-data1
+                            self.head_elevation=data2
                             if(data2<83):
-                                limited_data2=83
+                                self.head_elevation=83
                             elif(data2>150):
-                                limited_data2=150
-                            self.servo.setServoPwm('1',inverted_data1)
-                            self.servo.setServoPwm('2',limited_data2)
+                                self.head_elevation=150
+                            self.servo.setServoPwm('1',self.head_azimuth)
+                            self.servo.setServoPwm('2',self.head_elevation)
                         except:
                             pass
 
@@ -374,8 +376,11 @@ class Server:
                             pass
                     elif cmd.CMD_MATRIX_MOD in data:
                         if data[1] == '1':
-                            self.gimbalRun=threading.Thread(target=self.gimbal.start)
-                            self.gimbalRun.start()
+                            if self.gimbal.is_running == False:
+                                self.gimbal.initial_yaw=self.head_azimuth
+                                self.gimbal.initial_pitch=self.head_elevation
+                                self.gimbalRun=threading.Thread(target=self.gimbal.start)
+                                self.gimbalRun.start()
                         else:
                             self.gimbal.stop()
 
