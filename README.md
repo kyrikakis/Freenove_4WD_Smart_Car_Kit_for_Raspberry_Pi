@@ -21,6 +21,15 @@
 
 > If you meet any difficulties, please contact our support team for help.
 
+### Install
+
+cd Code/Server
+
+Modify permissions.
+sudo chmod 777 start.sh
+
+sudo chmod 644 robot.service
+cp robot.service /lib/systemd/system
 ### Support
 
 Freenove provides free and quick customer support. Including but not limited to:
