@@ -25,15 +25,38 @@
 ```
 cd Code/Server
 
-Modify permissions.
 sudo chmod 777 start.sh
 
 sudo chmod 644 robot.service
-cp robot.service /lib/systemd/system
+mkdir -p ~/.config/systemd/user
+cp robot.service ~/.config/systemd/user
 
-sudo systemctl daemon-reload
-sudo systemctl enable sample.service
+systemctl daemon-reload
+systemctl --user enable robot.service
 ```
+
+#### Running PulseAudio as System-Wide Daemon
+
+```
+sudo cp /usr/lib/systemd/user/pulseaudio.service /etc/systemd/system
+sudo cp /usr/lib/systemd/user/pulseaudio.socket /etc/systemd/system
+sudo vim /etc/systemd/system/pulseaudio.service
+```
+
+comment the line: `ConditionUser=!root`
+
+```
+sudo vim /etc/systemd/system/pulseaudio.service
+```
+
+comment the line: `ConditionUser=!root`
+
+sudo systemctl deamon-reload
+
+sudo systemctl --global disable pulseaudio.service pulseaudio.socket
+sudo systemctl --system enable pulseaudio.service pulseaudio.socket
+
+
 ### Support
 
 Freenove provides free and quick customer support. Including but not limited to:

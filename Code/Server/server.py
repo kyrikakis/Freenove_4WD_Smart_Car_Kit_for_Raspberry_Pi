@@ -30,6 +30,7 @@ from MatrixMode import MATRIX_MODE
 import RPi.GPIO as GPIO
 from matrix_display import CustomLEDMatrixController
 from GimbalControl import GimbalControl
+import subprocess
 
 class StreamingOutput(io.BufferedIOBase):
     def __init__(self):
@@ -65,6 +66,7 @@ class Server:
         self.matrix_mode=MATRIX_MODE.NONE
         self.head_azimuth=90
         self.head_elevation=90
+        subprocess.call("espeak -v greek -a 170 \"Γειά σου Σάμερ! Τι κάνεις? Είμαι το Ρομπότ!\"", shell= True)
     def get_interface_ip(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         return socket.inet_ntoa(fcntl.ioctl(s.fileno(),
@@ -168,7 +170,28 @@ class Server:
                 print ("Client connect failed")
             restCmd=""
             self.server_socket1.close()
+
+            voice_interval = 0.8
+            last_voice_time = time.perf_counter()
             while True:
+                time_elapsed = time.perf_counter() - last_voice_time
+                if(time_elapsed > voice_interval):
+                    if(self.Mode == 'speak1'):
+                        subprocess.call("espeak -v greek -a 170 \"Είμαι το Ρομπότ! Πού είναι η Σάμερ;\"", shell= True)
+                        self.Mode='one'
+                    elif(self.Mode == 'speak2'):
+                        subprocess.call("espeak -v greek -a 170 \"Τι μπορώ να κάνω για σένα;\"", shell= True)
+                        self.Mode='one'
+                    elif(self.Mode == 'speak3'):
+                        subprocess.call("espeak -v greek -a 170 \"Θέλεις να παίξουμε; Μπορώ να τρέχω και να με κυνηγάς, Έλα Έλα!\"", shell= True)
+                        self.Mode='one'
+                    elif(self.Mode == 'speak4'):
+                        subprocess.call("espeak -v greek -a 170 \"Το Ρομπότ νυστάζει, πάμε για ύπνο;\"", shell= True)
+                        self.Mode='one'
+                    elif(self.Mode == 'speak5'):
+                        subprocess.call("espeak -v greek -a 170 \"Μου αρέσει πολύ να τρέχω μέσα στο σπίτι!\"", shell= True)
+                        self.Mode='one'
+
                 try:
                     AllData=restCmd+self.connection1.recv(1024).decode('utf-8')
                 except:
@@ -338,9 +361,9 @@ class Server:
                                 stop_thread(Led_Mode)
                             except:
                                 pass
-                            self.led.ledMode(self.LedMoD)
+                            # self.led.ledMode(self.LedMoD)
                             time.sleep(0.1)
-                            self.led.ledMode(self.LedMoD)
+                            # self.led.ledMode(self.LedMoD)
                         else :
                             try:
                                 stop_thread(Led_Mode)
@@ -375,14 +398,27 @@ class Server:
                         except:
                             pass
                     elif cmd.CMD_MATRIX_MOD in data:
+                        last_voice_time = time.perf_counter()
                         if data[1] == '1':
-                            if self.gimbal.is_running == False:
-                                self.gimbal.initial_yaw=self.head_azimuth
-                                self.gimbal.initial_pitch=self.head_elevation
-                                self.gimbalRun=threading.Thread(target=self.gimbal.start)
-                                self.gimbalRun.start()
-                        else:
-                            self.gimbal.stop()
+                            self.Mode='speak1'
+                        elif data[1] == '2':
+                            self.Mode='speak2'
+                        elif data[1] == '3':
+                            self.Mode='speak3'
+                        elif data[1] == '4':
+                            self.Mode='speak4'
+                        elif data[1] == '5':
+                            self.Mode='speak5'
+                        elif data[1] == '0':
+                            self.Mode='one' #reset to cmd.CMD_MOTOR mode
+                        # if data[1] == '1':
+                        #     if self.gimbal.is_running == False:
+                        #         self.gimbal.initial_yaw=self.head_azimuth
+                        #         self.gimbal.initial_pitch=self.head_elevation
+                        #         self.gimbalRun=threading.Thread(target=self.gimbal.start)
+                        #         self.gimbalRun.start()
+                        # else:
+                        #     self.gimbal.stop()
 
 
 

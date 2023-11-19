@@ -99,4 +99,15 @@ class CustomLEDMatrixController:
         Update the physical display with the current data.
         """
         self.matrix.show()
-    
+
+
+# Main program logic follows:
+if __name__ == '__main__':
+    print("Running main. After that, you can press ctrl-C to end the program.")
+    display=CustomLEDMatrixController()
+    while True:
+        try :
+            display.eyes_smile()
+        except KeyboardInterrupt:
+            print ("\nEnd of program")
+            break

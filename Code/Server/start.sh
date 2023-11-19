@@ -4,4 +4,5 @@ pwd
 while ! ifconfig | grep -F "192.168.1." > /dev/null; do 
 	sleep 1
 done
+sudo amixer sset 'Master' 100%
 sudo python main.py -tn
