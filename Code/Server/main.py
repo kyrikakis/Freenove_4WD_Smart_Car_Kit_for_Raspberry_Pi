@@ -38,9 +38,13 @@ class mywindow(QMainWindow,Ui_server_ui):
         if self.start_tcp:
             self.TCP_Server.StartTcpServer()
             self.ReadData=Thread(target=self.TCP_Server.readdata)
+            self.InitiVideoConn1=Thread(target=self.TCP_Server.initVideoConnection1)
+            self.InitiVideoConn2=Thread(target=self.TCP_Server.initVideoConnection2)
             self.SendVideo=Thread(target=self.TCP_Server.sendvideo)
             self.power=Thread(target=self.TCP_Server.Power)
             self.display=Thread(target=self.TCP_Server.Display)
+            self.InitiVideoConn1.start()
+            self.InitiVideoConn2.start()
             self.SendVideo.start()
             self.ReadData.start()
             self.power.start()
@@ -76,14 +80,17 @@ class mywindow(QMainWindow,Ui_server_ui):
                         
     def close(self):
         try:
-           stop_thread(self.SendVideo)
-           stop_thread(self.ReadData)
-           stop_thread(self.power)
+            stop_thread(self.SendVideo)
+            stop_thread(self.InitiVideoConn1)
+            stop_thread(self.InitiVideoConn2)
+            stop_thread(self.ReadData)
+            stop_thread(self.power)
         except:
             pass
         try:
             self.TCP_Server.server_socket.shutdown(2)
             self.TCP_Server.server_socket1.shutdown(2)
+            self.TCP_Server.server_socket2.shutdown(2)
             self.TCP_Server.StopTcpServer()
         except:
             pass
@@ -98,9 +105,13 @@ class mywindow(QMainWindow,Ui_server_ui):
             self.TCP_Server.tcp_Flag = True
             print ("Open TCP")
             self.TCP_Server.StartTcpServer()
+            self.InitiVideoConn1=Thread(target=self.TCP_Server.initVideoConnection1)
+            self.InitiVideoConn2=Thread(target=self.TCP_Server.initVideoConnection2)
             self.SendVideo=Thread(target=self.TCP_Server.sendvideo)
             self.ReadData=Thread(target=self.TCP_Server.readdata)
             self.power=Thread(target=self.TCP_Server.Power)
+            self.InitiVideoConn1.start()
+            self.InitiVideoConn2.start()
             self.SendVideo.start()
             self.ReadData.start()
             self.power.start()
@@ -113,6 +124,8 @@ class mywindow(QMainWindow,Ui_server_ui):
                 stop_thread(self.ReadData)
                 stop_thread(self.power)
                 stop_thread(self.SendVideo)
+                stop_thread(self.InitiVideoConn1)
+                stop_thread(self.InitiVideoConn2)
             except:
                 pass
             self.TCP_Server.StopTcpServer()

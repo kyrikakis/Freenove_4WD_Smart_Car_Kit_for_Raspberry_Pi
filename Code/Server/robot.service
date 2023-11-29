@@ -5,7 +5,7 @@
 
  [Service]
  Type=simple
- ExecStart=/home/skyrikakis/start.sh
+ ExecStart=/home/pi/Freenove_4WD_Smart_Car_Kit_for_Raspberry_Pi/Code/Server/start.sh
 
  [Install]
  WantedBy=multi-user.target
