@@ -68,6 +68,8 @@ class Server:
         self.head_elevation=90
         self.camera = Picamera2()
         self.camera.configure(self.camera.create_video_configuration(main={"size": (600, 277)}))
+        self.camera.framerate_range = (30, 40)
+        self.camera.framerate = 40
         subprocess.call("espeak -v greek -a 170 \"Γειά σου Σάμερ! Τι κάνεις? Είμαι το Ρομπότ!\"", shell= True)
     def get_interface_ip(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
