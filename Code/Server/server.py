@@ -6,17 +6,17 @@ import socket
 import  numpy as np
 import struct
 import time
-from picamera2 import Picamera2,Preview
-from picamera2.encoders import JpegEncoder
-from picamera2.outputs import FileOutput
-from picamera2.encoders import Quality
+# from picamera2 import Picamera2,Preview
+# from picamera2.encoders import JpegEncoder
+# from picamera2.outputs import FileOutput
+# from picamera2.encoders import Quality
 from threading import Condition
 import fcntl
 import  sys
 import threading
 from Motor import *
 from servo import *
-from Led import *
+#from Led import *
 from Buzzer import *
 from ADC import *
 from Thread import *
@@ -29,7 +29,7 @@ from Command import COMMAND as cmd
 from MatrixMode import MATRIX_MODE
 import RPi.GPIO as GPIO
 from matrix_display import CustomLEDMatrixController
-from GimbalControl import GimbalControl
+# from GimbalControl import GimbalControl
 import subprocess
 
 class StreamingOutput(io.BufferedIOBase):
@@ -46,14 +46,14 @@ class Server:
     def __init__(self):
         self.PWM=Motor()
         self.servo=Servo()
-        self.led=Led()
+        #self.led=Led()
         self.ultrasonic=Ultrasonic()
         self.buzzer=Buzzer()
         self.adc=Adc()
         self.light=Light()
         self.infrared=Line_Tracking()
         self.display=CustomLEDMatrixController()
-        self.gimbal=GimbalControl()
+        # self.gimbal=GimbalControl()
         self.tcp_Flag = True
         self.sonic=False
         self.Light=False
@@ -66,10 +66,10 @@ class Server:
         self.matrix_mode=MATRIX_MODE.NONE
         self.head_azimuth=90
         self.head_elevation=90
-        self.camera = Picamera2()
-        self.camera.configure(self.camera.create_video_configuration(main={"size": (600, 277)}))
-        self.camera.framerate_range = (30, 40)
-        self.camera.framerate = 40
+        # self.camera = Picamera2()
+        # self.camera.configure(self.camera.create_video_configuration(main={"size": (600, 277)}))
+        # self.camera.framerate_range = (30, 40)
+        # self.camera.framerate = 40
         subprocess.call("espeak -v greek -a 170 \"Γειά σου Σάμερ! Τι κάνεις? Είμαι το Ρομπότ!\"", shell= True)
     def get_interface_ip(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -81,7 +81,7 @@ class Server:
         HOST=str(self.get_interface_ip())
         self.server_socket1 = socket.socket()
         self.server_socket1.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEPORT,1)
-        self.server_socket1.bind((HOST, 4000))
+        self.server_socket1.bind((HOST, 5000))
         self.server_socket1.listen(1)
         self.server_socket = socket.socket()
         self.server_socket.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEPORT,1)
@@ -104,15 +104,15 @@ class Server:
     def Reset(self):
         self.StopTcpServer()
         self.StartTcpServer()
-        self.camera.stop_recording()
-        self.camera.close()
-        self.InitiVideoConn1=Thread(target=self.initVideoConnection1)
-        self.InitiVideoConn2=Thread(target=self.initVideoConnection2)
-        self.SendVideo=Thread(target=self.sendvideo)
+        # self.camera.stop_recording()
+        # self.camera.close()
+        # self.InitiVideoConn1=Thread(target=self.initVideoConnection1)
+        # self.InitiVideoConn2=Thread(target=self.initVideoConnection2)
+        # self.SendVideo=Thread(target=self.sendvideo)
         self.ReadData=Thread(target=self.readdata)
-        self.InitiVideoConn1.start()
-        self.InitiVideoConn2.start()
-        self.SendVideo.start()
+        # self.InitiVideoConn1.start()
+        # self.InitiVideoConn2.start()
+        # self.SendVideo.start()
         self.ReadData.start()
     def send(self,data):
         self.connection1.send(data.encode('utf-8'))
@@ -136,27 +136,27 @@ class Server:
             pass
         self.server_socket2.close()
         print ("socket video2 connected ... ")
-    def sendvideo(self):
-        output = StreamingOutput()
-        encoder = JpegEncoder(q=90)
-        self.camera.start_recording(encoder, FileOutput(output),quality=Quality.VERY_HIGH)
-        while True:
-            with output.condition:
-                output.condition.wait()
-                frame = output.frame
-                lenFrame = len(output.frame)
-                lengthBin = struct.pack('<I', lenFrame)
-            try:
-                self.connection.write(lengthBin)
-                self.connection.write(frame)
-            except Exception as e:
-                pass
+    # def sendvideo(self):
+        # output = StreamingOutput()
+        # encoder = JpegEncoder(q=90)
+        # self.camera.start_recording(encoder, FileOutput(output),quality=Quality.VERY_HIGH)
+        # while True:
+        #     with output.condition:
+        #         output.condition.wait()
+        #         frame = output.frame
+        #         lenFrame = len(output.frame)
+        #         lengthBin = struct.pack('<I', lenFrame)
+        #     try:
+        #         self.connection.write(lengthBin)
+        #         self.connection.write(frame)
+        #     except Exception as e:
+        #         pass
 
-            try:
-                self.connection2.write(lengthBin)
-                self.connection2.write(frame)
-            except Exception as e:
-                pass
+        #     try:
+        #         self.connection2.write(lengthBin)
+        #         self.connection2.write(frame)
+        #     except Exception as e:
+        #         pass
 
     def stopMode(self):
         try:
@@ -366,40 +366,40 @@ class Server:
                         except:
                             pass
 
-                    elif cmd.CMD_LED in data:
-                        try:
-                            data1=int(data[1])
-                            data2=int(data[2])
-                            data3=int(data[3])
-                            data4=int(data[4])
-                            if data1==None or data2==None or data2==None or data3==None:
-                                continue
-                            self.led.ledIndex(data1,data2,data3,data4)
-                        except:
-                            pass
-                    elif cmd.CMD_LED_MOD in data:
-                        self.LedMoD=data[1]
-                        if self.LedMoD== '0':
-                            try:
-                                stop_thread(Led_Mode)
-                            except:
-                                pass
-                        if self.LedMoD == '1':
-                            try:
-                                stop_thread(Led_Mode)
-                            except:
-                                pass
-                            # self.led.ledMode(self.LedMoD)
-                            time.sleep(0.1)
-                            # self.led.ledMode(self.LedMoD)
-                        else :
-                            try:
-                                stop_thread(Led_Mode)
-                            except:
-                                pass
-                            time.sleep(0.1)
-                            Led_Mode=Thread(target=self.led.ledMode,args=(data[1],))
-                            Led_Mode.start()
+                    # elif cmd.CMD_LED in data:
+                    #     try:
+                    #         data1=int(data[1])
+                    #         data2=int(data[2])
+                    #         data3=int(data[3])
+                    #         data4=int(data[4])
+                    #         if data1==None or data2==None or data2==None or data3==None:
+                    #             continue
+                    #         self.led.ledIndex(data1,data2,data3,data4)
+                    #     except:
+                    #         pass
+                    # elif cmd.CMD_LED_MOD in data:
+                    #     self.LedMoD=data[1]
+                    #     if self.LedMoD== '0':
+                    #         try:
+                    #             stop_thread(Led_Mode)
+                    #         except:
+                    #             pass
+                    #     if self.LedMoD == '1':
+                    #         try:
+                    #             stop_thread(Led_Mode)
+                    #         except:
+                    #             pass
+                    #         # self.led.ledMode(self.LedMoD)
+                    #         time.sleep(0.1)
+                    #         # self.led.ledMode(self.LedMoD)
+                    #     else :
+                    #         try:
+                    #             stop_thread(Led_Mode)
+                    #         except:
+                    #             pass
+                    #         time.sleep(0.1)
+                    #         Led_Mode=Thread(target=self.led.ledMode,args=(data[1],))
+                    #         Led_Mode.start()
                     elif cmd.CMD_SONIC in data:
                         if data[1]=='1':
                             self.sonic=True
@@ -447,8 +447,25 @@ class Server:
                         #         self.gimbalRun.start()
                         # else:
                         #     self.gimbal.stop()
-
-
+                    elif cmd.CMD_SERVO in data:
+                        try:
+                            data1 = int(data[1])
+                            data2 = int(data[2])
+                            if data1 == None or data2 == None:
+                                continue
+                            if(data1 == 0):
+                                self.head_azimuth=data2+12
+                            elif(data1 == 1):
+                                self.head_elevation=data2
+                            if(self.head_elevation<83):
+                                self.head_elevation=83
+                            elif(self.head_elevation>150):
+                                self.head_elevation=150
+                            self.servo.setServoPwm('1',self.head_azimuth)
+                            self.servo.setServoPwm('2',self.head_elevation)
+                        except Exception as e:
+                            print(e)
+                            pass
 
         except Exception as e:
             print(e)

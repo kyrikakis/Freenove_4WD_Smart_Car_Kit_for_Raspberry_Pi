@@ -1,11 +1,10 @@
  [Unit]
  Description=My Robot Service
  Wants=network-online.target
- After=network.target network-online.target
 
  [Service]
  Type=simple
  ExecStart=/home/pi/Freenove_4WD_Smart_Car_Kit_for_Raspberry_Pi/Code/Server/start.sh
 
  [Install]
- WantedBy=multi-user.target
+ WantedBy=default.target

@@ -11,5 +11,6 @@ class COMMAND:
     CMD_POWER = "CMD_POWER" 
     CMD_MODE = "CMD_CAR_MODE"
     CMD_MATRIX_MOD = "CMD_MATRIX_MOD"
+    CMD_SERVO = "CMD_SERVO"
     def __init__(self):
         pass

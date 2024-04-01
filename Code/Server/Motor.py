@@ -32,6 +32,9 @@ class Motor:
         return duty1,duty2,duty3,duty4
         
     def left_Upper_Wheel(self,duty):
+        # Inverted wheel motor 
+        duty = 4095 - (duty - (-4095))
+        #
         if duty>0:
             self.pwm.setMotorPwm(0,0)
             self.pwm.setMotorPwm(1,duty)
@@ -62,6 +65,9 @@ class Motor:
             self.pwm.setMotorPwm(6,4095)
             self.pwm.setMotorPwm(7,4095)
     def right_Lower_Wheel(self,duty):
+        # Inverted wheel motor 
+        duty = 4095 - (duty - (-4095))
+        #
         if duty>0:
             self.pwm.setMotorPwm(4,0)
             self.pwm.setMotorPwm(5,duty)
