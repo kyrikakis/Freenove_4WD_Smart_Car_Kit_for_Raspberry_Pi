@@ -6,5 +6,8 @@ while ! ifconfig | grep -F "192.168.1." > /dev/null; do
 done
 #bash /home/pi/start_ros2.sh &
 #sudo amixer sset 'Master' 100%
-# libcamera-vid -t 0 --width 640 --height 480 --inline --listen -o tcp://0.0.0.0:8888 &
+./start_camera_0.sh &
+sleep 3
+./start_camera_1.sh &
+sleep 2
 sudo python main.py -tn
