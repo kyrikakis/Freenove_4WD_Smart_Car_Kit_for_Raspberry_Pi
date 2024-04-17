@@ -19,7 +19,7 @@ for x in range(1,4):
         break
 
 for x in range(1,4):
-    if os.system("sudo pip3 install --break-system-packages adafruit-circuitpython-ht16k33 ") == 0: sudo pip3 uninstall --break-system-packages rpi-gpio
+    if os.system("sudo pip3 install --break-system-packages adafruit-circuitpython-ht16k33 ") == 0: 
         flag=flag | 0x04
         break
 
