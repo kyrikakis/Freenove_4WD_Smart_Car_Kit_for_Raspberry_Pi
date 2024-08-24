@@ -17,7 +17,7 @@ picam0.configure(video_config0)
 picam1.start()
 picam0.start()
 
-writer = cv2.VideoWriter("appsrc ! video/x-raw, format=BGR ! queue ! videoconvert ! x265enc insert-vui=1 \
+writer = cv2.VideoWriter("appsrc ! video/x-raw, format=BGR ! queue ! videoconvert ! x264enc insert-vui=1 \
                          speed-preset=veryfast tune=zerolatency ! h264parse ! mpegtsmux ! tcpserversink host=0.0.0.0 port=8889", cv2.CAP_GSTREAMER, 0, 30.0, (2048, 576)) 
 
 while True:
